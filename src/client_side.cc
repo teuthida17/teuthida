@@ -4425,6 +4425,8 @@ ConnStateData::fakeAConnectRequest(const char *reason, const SBuf &payload)
 {
     // fake a CONNECT request to force connState to tunnel
     SBuf connectHost;
+    static char ip[MAX_IPSTRLEN];
+    clientConnection->local.toUrl(ip, sizeof(ip));
 #if USE_OPENSSL
     if (serverBump() && !serverBump()->clientSni.isEmpty()) {
         connectHost.assign(serverBump()->clientSni);
@@ -4433,8 +4435,7 @@ ConnStateData::fakeAConnectRequest(const char *reason, const SBuf &payload)
     } else
 #endif
     {
-        static char ip[MAX_IPSTRLEN];
-        connectHost.assign(clientConnection->local.toUrl(ip, sizeof(ip)));
+        connectHost.assign(ip);
     }
     // Pre-pend this fake request to the TLS bits already in the buffer
     SBuf retStr;
@@ -4442,6 +4443,8 @@ ConnStateData::fakeAConnectRequest(const char *reason, const SBuf &payload)
     retStr.append(connectHost);
     retStr.append(" HTTP/1.1\r\nHost: ");
     retStr.append(connectHost);
+    retStr.append("\r\nX-Host-Ip: ");
+    retStr.append(ip, strlen(ip));
     retStr.append("\r\n\r\n");
     retStr.append(payload);
     in.buf = retStr;
