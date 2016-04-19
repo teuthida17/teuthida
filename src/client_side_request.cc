@@ -62,6 +62,7 @@
 #include "adaptation/Answer.h"
 #include "adaptation/Iterator.h"
 #include "adaptation/Service.h"
+#include <uuid/uuid.h>
 #if ICAP_CLIENT
 #include "adaptation/icap/History.h"
 #endif
@@ -1847,6 +1848,14 @@ ClientHttpRequest::startAdaptation(const Adaptation::ServiceGroupPointer &g)
     debugs(85, 3, HERE << "adaptation needed for " << this);
     assert(!virginHeadSource);
     assert(!adaptedBodySource);
+
+    {
+        char uuid_str[40];
+        uuid_t uuid;
+        uuid_generate(uuid);
+        uuid_unparse_lower(uuid, (char*)&uuid_str[0]);
+        request->transaction_id = uuid_str;
+    }
     virginHeadSource = initiateAdaptation(
                            new Adaptation::Iterator(request, NULL, al, g));
 

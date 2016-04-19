@@ -64,6 +64,9 @@ public:
 
     BodyPipe::Pointer body_pipe; // optional pipeline to receive message body
 
+    // Unique identifier used to allow ICAP to positively match REQ with RESP
+    String transaction_id;
+
     // returns true and sets hdr_sz on success
     // returns false and sets *error to zero when needs more data
     // returns false and sets *error to a positive Http::StatusCode on error

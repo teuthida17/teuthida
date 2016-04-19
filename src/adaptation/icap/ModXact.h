@@ -136,6 +136,7 @@ public:
 public:
     InOut virgin;
     InOut adapted;
+    String transaction_id;
 
     // bypasses exceptions if needed and possible
     virtual void callException(const std::exception &e);

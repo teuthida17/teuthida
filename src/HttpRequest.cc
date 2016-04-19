@@ -201,6 +201,7 @@ HttpRequest::clone() const
 
     copy->lastmod = lastmod;
     copy->etag = etag;
+    copy->transaction_id = transaction_id;
     copy->vary_headers = vary_headers;
     // XXX: what to do with copy->peer_domain?
 
@@ -231,6 +232,7 @@ HttpRequest::inheritProperties(const HttpMsg *aMsg)
 
 #if USE_ADAPTATION
     adaptHistory_ = aReq->adaptHistory();
+    transaction_id = aMsg->transaction_id;
 #endif
 #if ICAP_CLIENT
     icapHistory_ = aReq->icapHistory();

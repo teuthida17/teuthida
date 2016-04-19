@@ -1435,6 +1435,11 @@ void Adaptation::Icap::ModXact::makeRequestHeaders(MemBuf &buf)
     if (TheConfig.send_username && request)
         makeUsernameHeader(request, buf);
 
+    if (transaction_id.size() == 0) {
+        transaction_id = request->transaction_id;
+    }
+    buf.Printf("X-Transaction-Id: %s\r\n", transaction_id.rawBuf());
+
     // Adaptation::Config::metaHeaders
     typedef Notes::iterator ACAMLI;
     for (ACAMLI i = Adaptation::Config::metaHeaders.begin(); i != Adaptation::Config::metaHeaders.end(); ++i) {

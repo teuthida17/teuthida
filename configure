@@ -22539,7 +22539,7 @@ then
 
 $as_echo "#define USE_ADAPTATION 1" >>confdefs.h
 
-    ADAPTATION_LIBS="adaptation/libadaptation.la"
+    ADAPTATION_LIBS="adaptation/libadaptation.la -luuid"
 else
 
 $as_echo "#define USE_ADAPTATION 0" >>confdefs.h

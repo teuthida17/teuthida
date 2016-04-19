@@ -204,6 +204,8 @@ HttpMsg::parseCharBuf(const char *buf, ssize_t end)
     mb.terminate();
     success = httpMsgParseStep(mb.buf, mb.size, 0);
     mb.clean();
+    transaction_id.clean();
+
     return success == 1;
 }
 

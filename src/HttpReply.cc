@@ -591,6 +591,7 @@ bool HttpReply::inheritProperties(const HttpMsg *aMsg)
     if (!aRep)
         return false;
     keep_alive = aRep->keep_alive;
+    transaction_id = aMsg->transaction_id;
     return true;
 }
 
