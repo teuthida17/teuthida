@@ -143,6 +143,7 @@ public:
 
     // private but exposed for ClientRequestContext
     void handleAdaptationFailure(int errDetail, bool bypassable = false);
+    bool requestSatisfactionMode() const { return request_satisfaction_mode; }
 
 private:
     // Adaptation::Initiator API
