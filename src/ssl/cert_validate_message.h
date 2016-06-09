@@ -96,7 +96,11 @@ public:
 
     /// Build a request message for the cert validation helper
     /// using informations provided by vcert object
+#if USE_ADAPTATION
+    void composeRequest(CertValidationRequest const &vcert, String transaction_id);
+#else
     void composeRequest(CertValidationRequest const &vcert);
+#endif
 
     /// Parse a response message and fill the resp object with parsed informations
     bool parseResponse(CertValidationResponse &resp, STACK_OF(X509) *peerCerts, std::string &error);
@@ -120,6 +124,10 @@ public:
     static const std::string param_proto_version;
     /// Parameter name for SSL cipher
     static const std::string param_cipher;
+#if USE_ADAPTATION
+    // UUID from icap adaptation
+    static const std::string param_transaction_id;
+#endif
 };
 
 }//namespace Ssl

@@ -52,7 +52,11 @@ public:
     void Init(); ///< Init helper structure.
     void Shutdown(); ///< Shutdown helper structure.
     /// Submit crtd request message to external crtd server.
-    void sslSubmit(Ssl::CertValidationRequest const & request, AsyncCall::Pointer &);
+    void sslSubmit(Ssl::CertValidationRequest const & request,
+#if USE_ADAPTATION
+        String transaction_id,
+#endif
+        AsyncCall::Pointer &);
 private:
     CertValidationHelper();
     ~CertValidationHelper();

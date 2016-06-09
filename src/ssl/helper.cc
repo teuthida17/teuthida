@@ -250,7 +250,11 @@ sslCrtvdHandleReplyWrapper(void *data, const ::Helper::Reply &reply)
     delete crtdvdData;
 }
 
-void Ssl::CertValidationHelper::sslSubmit(Ssl::CertValidationRequest const &request, AsyncCall::Pointer &callback)
+void Ssl::CertValidationHelper::sslSubmit(Ssl::CertValidationRequest const &request,
+#if USE_ADAPTATION
+    String transaction_id,
+#endif
+    AsyncCall::Pointer &callback)
 {
     static time_t first_warn = 0;
     assert(ssl_crt_validator);
@@ -273,7 +277,11 @@ void Ssl::CertValidationHelper::sslSubmit(Ssl::CertValidationRequest const &requ
 
     Ssl::CertValidationMsg message(Ssl::CrtdMessage::REQUEST);
     message.setCode(Ssl::CertValidationMsg::code_cert_validate);
+#if USE_ADAPTATION
+    message.composeRequest(request, transaction_id);
+#else
     message.composeRequest(request);
+#endif
     debugs(83, 5, "SSL crtvd request: " << message.compose().c_str());
 
     submitData *crtdvdData = new submitData;

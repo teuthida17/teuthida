@@ -15,7 +15,11 @@
 #include "ssl/support.h"
 
 void
+#if USE_ADAPTATION
+Ssl::CertValidationMsg::composeRequest(CertValidationRequest const &vcert, String transaction_id)
+#else
 Ssl::CertValidationMsg::composeRequest(CertValidationRequest const &vcert)
+#endif
 {
     body.clear();
     body += Ssl::CertValidationMsg::param_host + "=" + vcert.domainName;
@@ -26,6 +30,11 @@ Ssl::CertValidationMsg::composeRequest(CertValidationRequest const &vcert)
 
     if (const char *cipherName = SSL_CIPHER_get_name(SSL_get_current_cipher(vcert.ssl)))
         body += "\n" +  Ssl::CertValidationMsg::param_cipher + "=" + cipherName;
+
+#if USE_ADAPTATION
+    if (transaction_id.size() > 0)
+        body += "\n" +  Ssl::CertValidationMsg::param_transaction_id + "=" + transaction_id.rawBuf();
+#endif
 
     if (!peerCerts)
         peerCerts = SSL_get_peer_cert_chain(vcert.ssl);
@@ -239,4 +248,5 @@ const std::string Ssl::CertValidationMsg::param_error_reason("error_reason_");
 const std::string Ssl::CertValidationMsg::param_error_cert("error_cert_");
 const std::string Ssl::CertValidationMsg::param_proto_version("proto_version");
 const std::string Ssl::CertValidationMsg::param_cipher("cipher");
+const std::string Ssl::CertValidationMsg::param_transaction_id("transaction_id");
 

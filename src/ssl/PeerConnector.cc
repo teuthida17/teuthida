@@ -338,7 +338,11 @@ Ssl::PeerConnector::sslFinalized()
         try {
             debugs(83, 5, "Sending SSL certificate for validation to ssl_crtvd.");
             AsyncCall::Pointer call = asyncCall(83,5, "Ssl::PeerConnector::sslCrtvdHandleReply", Ssl::CertValidationHelper::CbDialer(this, &Ssl::PeerConnector::sslCrtvdHandleReply, NULL));
-            Ssl::CertValidationHelper::GetInstance()->sslSubmit(validationRequest, call);
+            Ssl::CertValidationHelper::GetInstance()->sslSubmit(validationRequest,
+#if USE_ADAPTATION
+                request->transaction_id,
+#endif
+                call);
             return false;
         } catch (const std::exception &e) {
             debugs(83, DBG_IMPORTANT, "ERROR: Failed to compose ssl_crtvd " <<
