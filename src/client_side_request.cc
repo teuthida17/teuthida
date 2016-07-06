@@ -1841,6 +1841,14 @@ ClientHttpRequest::doCallouts()
 #endif
 
 #if USE_ADAPTATION
+static String new_transaction_id() {
+    char uuid_str[40];
+    uuid_t uuid;
+    uuid_generate(uuid);
+    uuid_unparse_lower(uuid, (char*)&uuid_str[0]);
+    return String(uuid_str);
+}
+
 /// Initiate an asynchronous adaptation transaction which will call us back.
 void
 ClientHttpRequest::startAdaptation(const Adaptation::ServiceGroupPointer &g)
@@ -1849,12 +1857,22 @@ ClientHttpRequest::startAdaptation(const Adaptation::ServiceGroupPointer &g)
     assert(!virginHeadSource);
     assert(!adaptedBodySource);
 
+    // if in transparent mode and this is a fake CONNECT, check for
+    // second connect after reading of ClientHello
+    if (getConn() != NULL && getConn()->transparent() && request->method == Http::METHOD_CONNECT) {
+        debugs(33, 5, "check fake CONNECT uuid");
+        if (getConn()->fakeConnectUuid != "") {
+            debugs(33, 5, "reusing CONNECT uuid : " << getConn()->fakeConnectUuid);
+            request->transaction_id = getConn()->fakeConnectUuid;
+        } else {
+            request->transaction_id = new_transaction_id();
+            debugs(33, 5, "saving CONNECT uuid : " << request->transaction_id);
+            getConn()->fakeConnectUuid = request->transaction_id;
+        }
+    }
+    else
     {
-        char uuid_str[40];
-        uuid_t uuid;
-        uuid_generate(uuid);
-        uuid_unparse_lower(uuid, (char*)&uuid_str[0]);
-        request->transaction_id = uuid_str;
+        request->transaction_id = new_transaction_id();
     }
     virginHeadSource = initiateAdaptation(
                            new Adaptation::Iterator(request, NULL, al, g));

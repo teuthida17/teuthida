@@ -403,6 +403,7 @@ public:
     /// generate a fake CONNECT request with the given payload
     /// at the beginning of the client I/O buffer
     void fakeAConnectRequest(const char *reason, const SBuf &payload);
+    String fakeConnectUuid;
 
     /* Registered Runner API */
     virtual void startShutdown();
